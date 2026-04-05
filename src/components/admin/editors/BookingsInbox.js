@@ -14,6 +14,8 @@ export default function BookingsInbox() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState("");
   const [selected, setSelected] = useState(null);
+  const [pendingStatus, setPendingStatus] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     fetchBookings();
@@ -65,7 +67,15 @@ export default function BookingsInbox() {
 
   function openBooking(booking) {
     setSelected(booking);
+    setPendingStatus(booking.status);
     if (!booking.read) markAsRead(booking._id);
+  }
+
+  async function saveStatus() {
+    if (!selected || !pendingStatus || pendingStatus === selected.status) return;
+    setSaving(true);
+    await updateStatus(selected._id, pendingStatus);
+    setSaving(false);
   }
 
   function formatDate(dateStr) {
@@ -194,9 +204,9 @@ export default function BookingsInbox() {
                   {["new", "confirmed", "completed", "cancelled"].map((s) => (
                     <button
                       key={s}
-                      onClick={() => updateStatus(selected._id, s)}
+                      onClick={() => setPendingStatus(s)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                        selected.status === s
+                        pendingStatus === s
                           ? statusColors[s]
                           : "bg-white text-foreground/50 hover:bg-cream"
                       }`}
@@ -207,12 +217,21 @@ export default function BookingsInbox() {
                 </div>
               </div>
 
-              <button
-                onClick={() => deleteBooking(selected._id)}
-                className="text-red-400 hover:text-red-600 text-xs mt-2"
-              >
-                Delete Booking
-              </button>
+              <div className="flex items-center gap-3 pt-2">
+                <button
+                  onClick={saveStatus}
+                  disabled={saving || pendingStatus === selected.status}
+                  className="bg-pink text-white px-5 py-2 rounded-lg text-sm font-medium hover:bg-pink-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  {saving ? "Saving..." : "Save Status"}
+                </button>
+                <button
+                  onClick={() => deleteBooking(selected._id)}
+                  className="text-red-400 hover:text-red-600 text-sm"
+                >
+                  Delete
+                </button>
+              </div>
             </div>
           ) : (
             <div className="bg-cream/30 rounded-xl p-6 flex items-center justify-center text-foreground/40 text-sm">

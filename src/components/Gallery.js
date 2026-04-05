@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
+import Image from "next/image";
 
 const placeholderColors = [
   "from-pink-light to-pink",
@@ -18,28 +19,25 @@ export default function Gallery({ data, limit, showViewAll = false }) {
   const subtitle = data?.subtitle || "";
   const allItems = data?.items || [];
   const items = limit ? allItems.slice(0, limit) : allItems;
-  const hasMore = limit && allItems.length > limit;
   const [lightbox, setLightbox] = useState(null);
 
+  const imageItems = useMemo(
+    () => items.reduce((acc, item, i) => (item.image ? [...acc, i] : acc), []),
+    [items]
+  );
+
+  const currentNavIdx = useMemo(
+    () => (lightbox !== null ? imageItems.indexOf(lightbox) : -1),
+    [lightbox, imageItems]
+  );
+
   const close = useCallback(() => setLightbox(null), []);
-
   const goNext = useCallback(() => {
-    if (lightbox === null) return;
-    const imageItems = items.filter((it) => it.image);
-    const currentIdx = imageItems.findIndex((it) => it === items[lightbox]);
-    if (currentIdx < imageItems.length - 1) {
-      setLightbox(items.indexOf(imageItems[currentIdx + 1]));
-    }
-  }, [lightbox, items]);
-
+    if (currentNavIdx < imageItems.length - 1) setLightbox(imageItems[currentNavIdx + 1]);
+  }, [currentNavIdx, imageItems]);
   const goPrev = useCallback(() => {
-    if (lightbox === null) return;
-    const imageItems = items.filter((it) => it.image);
-    const currentIdx = imageItems.findIndex((it) => it === items[lightbox]);
-    if (currentIdx > 0) {
-      setLightbox(items.indexOf(imageItems[currentIdx - 1]));
-    }
-  }, [lightbox, items]);
+    if (currentNavIdx > 0) setLightbox(imageItems[currentNavIdx - 1]);
+  }, [currentNavIdx, imageItems]);
 
   useEffect(() => {
     if (lightbox === null) return;
@@ -58,14 +56,8 @@ export default function Gallery({ data, limit, showViewAll = false }) {
     };
   }, [lightbox, close, goNext, goPrev]);
 
-  function openLightbox(i) {
-    if (items[i]?.image) setLightbox(i);
-  }
-
-  const imageItems = items.filter((it) => it.image);
-  const currentImageIdx = lightbox !== null ? imageItems.findIndex((it) => it === items[lightbox]) : -1;
-  const hasPrev = currentImageIdx > 0;
-  const hasNext = currentImageIdx < imageItems.length - 1;
+  const hasPrev = currentNavIdx > 0;
+  const hasNext = currentNavIdx < imageItems.length - 1;
 
   return (
     <section id="gallery" className="py-20 bg-white">
@@ -84,17 +76,20 @@ export default function Gallery({ data, limit, showViewAll = false }) {
           {items.map((item, i) => (
             <div
               key={i}
-              onClick={() => openLightbox(i)}
+              onClick={() => item.image && setLightbox(i)}
               className={`aspect-square rounded-2xl overflow-hidden flex items-center justify-center cursor-pointer hover:scale-[1.02] transition-transform duration-300 shadow-sm hover:shadow-md ${
                 !item.image ? `bg-gradient-to-br ${placeholderColors[i % placeholderColors.length]}` : ""
               }`}
             >
               {item.image ? (
                 <div className="relative w-full h-full group">
-                  <img
+                  <Image
                     src={item.image}
-                    alt={item.label}
-                    className="w-full h-full object-cover"
+                    alt={item.label || "Nail design"}
+                    fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    className="object-cover"
+                    loading={i < 3 ? "eager" : "lazy"}
                   />
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-end justify-center pb-4">
                     <p className="text-white font-medium text-sm opacity-0 group-hover:opacity-100 transition-opacity bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full">
@@ -137,7 +132,6 @@ export default function Gallery({ data, limit, showViewAll = false }) {
           className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center"
           onClick={close}
         >
-          {/* Close button */}
           <button
             onClick={close}
             className="absolute top-4 right-4 text-white/70 hover:text-white z-10"
@@ -147,7 +141,6 @@ export default function Gallery({ data, limit, showViewAll = false }) {
             </svg>
           </button>
 
-          {/* Prev arrow */}
           {hasPrev && (
             <button
               onClick={(e) => { e.stopPropagation(); goPrev(); }}
@@ -159,14 +152,10 @@ export default function Gallery({ data, limit, showViewAll = false }) {
             </button>
           )}
 
-          {/* Image */}
-          <div
-            className="max-w-4xl max-h-[85vh] px-12"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="max-w-4xl max-h-[85vh] px-12" onClick={(e) => e.stopPropagation()}>
             <img
               src={items[lightbox].image}
-              alt={items[lightbox].label}
+              alt={items[lightbox].label || "Nail design"}
               className="max-w-full max-h-[80vh] object-contain rounded-lg"
             />
             {items[lightbox].label && (
@@ -176,7 +165,6 @@ export default function Gallery({ data, limit, showViewAll = false }) {
             )}
           </div>
 
-          {/* Next arrow */}
           {hasNext && (
             <button
               onClick={(e) => { e.stopPropagation(); goNext(); }}
@@ -188,9 +176,8 @@ export default function Gallery({ data, limit, showViewAll = false }) {
             </button>
           )}
 
-          {/* Counter */}
           <p className="absolute bottom-4 text-white/50 text-sm">
-            {currentImageIdx + 1} / {imageItems.length}
+            {currentNavIdx + 1} / {imageItems.length}
           </p>
         </div>
       )}

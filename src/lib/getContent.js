@@ -18,14 +18,25 @@ export async function getAllContent() {
   const docs = await Content.find({}).lean();
 
   const result = {};
+  const missing = [];
+
   for (const key of sections) {
     const existing = docs.find((d) => d.section === key);
     if (existing) {
       result[key] = JSON.parse(JSON.stringify(existing));
     } else {
-      const created = await Content.create(defaultContent[key]);
-      result[key] = JSON.parse(JSON.stringify(created));
+      missing.push(key);
     }
   }
+
+  if (missing.length > 0) {
+    const toCreate = missing.map((key) => defaultContent[key]);
+    const created = await Content.insertMany(toCreate);
+    for (const doc of created) {
+      const plain = JSON.parse(JSON.stringify(doc));
+      result[plain.section] = plain;
+    }
+  }
+
   return result;
 }

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function About({ data }) {
   const title = data?.title || "Hi, I'm Rozie!";
   const name = data?.name || "Rozie Gurung";
@@ -13,10 +15,13 @@ export default function About({ data }) {
           <div className="relative">
             <div className="aspect-[4/5] rounded-3xl bg-gradient-to-br from-pink-light to-gold-light flex items-center justify-center overflow-hidden">
               {image ? (
-                <img
+                <Image
                   src={image}
                   alt={name}
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
                 />
               ) : (
                 <div className="text-center p-8">

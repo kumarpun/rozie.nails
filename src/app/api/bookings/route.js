@@ -30,9 +30,11 @@ export async function GET(request) {
   const status = searchParams.get("status");
 
   const filter = status ? { status } : {};
-  const bookings = await Booking.find(filter).sort({ createdAt: -1 }).lean();
 
-  const unreadCount = await Booking.countDocuments({ read: false });
+  const [bookings, unreadCount] = await Promise.all([
+    Booking.find(filter).sort({ createdAt: -1 }).lean(),
+    Booking.countDocuments({ read: false }),
+  ]);
 
   return NextResponse.json({
     bookings: JSON.parse(JSON.stringify(bookings)),

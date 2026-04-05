@@ -11,10 +11,13 @@ const BookingSchema = new mongoose.Schema(
       type: String,
       enum: ["new", "confirmed", "completed", "cancelled"],
       default: "new",
+      index: true,
     },
-    read: { type: Boolean, default: false },
+    read: { type: Boolean, default: false, index: true },
   },
   { timestamps: true }
 );
+
+BookingSchema.index({ createdAt: -1 });
 
 export default mongoose.models.Booking || mongoose.model("Booking", BookingSchema);

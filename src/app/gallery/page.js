@@ -3,7 +3,7 @@ import Gallery from "@/components/Gallery";
 import Footer from "@/components/Footer";
 import { getContent } from "@/lib/getContent";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata = {
   title: "Gallery | Rozie Nails",

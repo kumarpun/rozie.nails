@@ -1,4 +1,6 @@
-export default function Footer() {
+export default function Footer({ data }) {
+  const tagline = data?.tagline || "Beautiful nails, affordable prices";
+
   return (
     <footer className="bg-foreground text-white/70 py-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -8,24 +10,14 @@ export default function Footer() {
               <span className="text-pink">Rozie</span>{" "}
               <span className="text-gold-light">Nails</span>
             </p>
-            <p className="text-sm mt-1 text-white/50">
-              Beautiful nails, affordable prices
-            </p>
+            <p className="text-sm mt-1 text-white/50">{tagline}</p>
           </div>
 
           <div className="flex items-center gap-6">
-            <a href="#services" className="text-sm hover:text-pink transition-colors">
-              Services
-            </a>
-            <a href="#about" className="text-sm hover:text-pink transition-colors">
-              About
-            </a>
-            <a href="#gallery" className="text-sm hover:text-pink transition-colors">
-              Gallery
-            </a>
-            <a href="#booking" className="text-sm hover:text-pink transition-colors">
-              Book
-            </a>
+            <a href="#services" className="text-sm hover:text-pink transition-colors">Services</a>
+            <a href="#about" className="text-sm hover:text-pink transition-colors">About</a>
+            <a href="#gallery" className="text-sm hover:text-pink transition-colors">Gallery</a>
+            <a href="#booking" className="text-sm hover:text-pink transition-colors">Book</a>
           </div>
         </div>
 

@@ -2,17 +2,20 @@
 
 import { useState } from "react";
 
-const serviceOptions = [
-  "Classic Manicure - $25",
-  "Gel Manicure - $35",
-  "Classic Pedicure - $30",
-  "Gel Pedicure - $40",
-  "Nail Art - From $10",
-  "Mani + Pedi Combo - $50",
-];
-
-export default function Booking() {
+export default function Booking({ data, services }) {
   const [submitted, setSubmitted] = useState(false);
+
+  const title = data?.title || "Book an Appointment";
+  const subtitle = data?.subtitle || "";
+  const phone = data?.phone || "(555) 123-4567";
+  const instagram = data?.instagram || "@rozie.nails";
+  const instagramUrl = data?.instagramUrl || "https://instagram.com";
+  const location = data?.location || "Home Studio (address shared upon booking)";
+  const hours = data?.hours || [];
+
+  const serviceOptions = (services || []).map(
+    (s) => `${s.title} - ${s.price}`
+  );
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -26,12 +29,10 @@ export default function Booking() {
           <p className="text-pink-dark font-medium tracking-widest uppercase text-sm mb-2">
             Get In Touch
           </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-            Book an Appointment
-          </h2>
-          <p className="text-foreground/60 mt-4 max-w-xl mx-auto">
-            Ready for beautiful nails? Fill out the form below or contact me directly. I&apos;ll get back to you as soon as possible!
-          </p>
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">{title}</h2>
+          {subtitle && (
+            <p className="text-foreground/60 mt-4 max-w-xl mx-auto">{subtitle}</p>
+          )}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
@@ -40,9 +41,7 @@ export default function Booking() {
             {submitted ? (
               <div className="text-center py-12">
                 <span className="text-5xl block mb-4">🎉</span>
-                <h3 className="text-2xl font-bold text-pink-dark mb-2">
-                  Thank You!
-                </h3>
+                <h3 className="text-2xl font-bold text-pink-dark mb-2">Thank You!</h3>
                 <p className="text-foreground/60">
                   I&apos;ll get back to you shortly to confirm your appointment.
                 </p>
@@ -56,9 +55,7 @@ export default function Booking() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground/70 mb-1">
-                    Your Name
-                  </label>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Your Name</label>
                   <input
                     type="text"
                     required
@@ -67,9 +64,7 @@ export default function Booking() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground/70 mb-1">
-                    Phone Number
-                  </label>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Phone Number</label>
                   <input
                     type="tel"
                     required
@@ -78,25 +73,19 @@ export default function Booking() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground/70 mb-1">
-                    Service
-                  </label>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Service</label>
                   <select
                     required
                     className="w-full px-4 py-3 rounded-xl border border-foreground/10 bg-white focus:outline-none focus:ring-2 focus:ring-pink/50 focus:border-pink transition-colors"
                   >
                     <option value="">Select a service...</option>
                     {serviceOptions.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
-                      </option>
+                      <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground/70 mb-1">
-                    Preferred Date
-                  </label>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Preferred Date</label>
                   <input
                     type="date"
                     required
@@ -104,9 +93,7 @@ export default function Booking() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground/70 mb-1">
-                    Message (optional)
-                  </label>
+                  <label className="block text-sm font-medium text-foreground/70 mb-1">Message (optional)</label>
                   <textarea
                     rows={3}
                     className="w-full px-4 py-3 rounded-xl border border-foreground/10 bg-white focus:outline-none focus:ring-2 focus:ring-pink/50 focus:border-pink transition-colors resize-none"
@@ -129,7 +116,7 @@ export default function Booking() {
               <h3 className="text-xl font-semibold mb-4">Contact Me Directly</h3>
               <div className="space-y-4">
                 <a
-                  href="tel:+1234567890"
+                  href={`tel:${phone}`}
                   className="flex items-center gap-4 text-foreground/70 hover:text-pink-dark transition-colors"
                 >
                   <div className="w-12 h-12 rounded-full bg-pink-light flex items-center justify-center shrink-0">
@@ -139,12 +126,12 @@ export default function Booking() {
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Phone</p>
-                    <p className="text-sm">(555) 123-4567</p>
+                    <p className="text-sm">{phone}</p>
                   </div>
                 </a>
 
                 <a
-                  href="https://instagram.com"
+                  href={instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-4 text-foreground/70 hover:text-pink-dark transition-colors"
@@ -156,7 +143,7 @@ export default function Booking() {
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Instagram</p>
-                    <p className="text-sm">@rozie.nails</p>
+                    <p className="text-sm">{instagram}</p>
                   </div>
                 </a>
 
@@ -169,29 +156,25 @@ export default function Booking() {
                   </div>
                   <div>
                     <p className="font-medium text-foreground">Location</p>
-                    <p className="text-sm">Home Studio (address shared upon booking)</p>
+                    <p className="text-sm">{location}</p>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-gold-light/50 rounded-2xl p-6">
-              <h4 className="font-semibold text-foreground mb-2">Hours</h4>
-              <div className="space-y-1 text-sm text-foreground/70">
-                <div className="flex justify-between">
-                  <span>Monday - Friday</span>
-                  <span className="font-medium">9:00 AM - 7:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Saturday</span>
-                  <span className="font-medium">10:00 AM - 5:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Sunday</span>
-                  <span className="font-medium">By Appointment</span>
+            {hours.length > 0 && (
+              <div className="bg-gold-light/50 rounded-2xl p-6">
+                <h4 className="font-semibold text-foreground mb-2">Hours</h4>
+                <div className="space-y-1 text-sm text-foreground/70">
+                  {hours.map((h, i) => (
+                    <div key={i} className="flex justify-between">
+                      <span>{h.day}</span>
+                      <span className="font-medium">{h.time}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

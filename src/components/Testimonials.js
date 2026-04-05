@@ -1,21 +1,3 @@
-const testimonials = [
-  {
-    name: "Sarah M.",
-    text: "Rozie is amazing! My nails have never looked this good. The home studio is so cozy and relaxing. Best nail experience ever!",
-    rating: 5,
-  },
-  {
-    name: "Priya K.",
-    text: "Such affordable prices for such high quality work! Rozie really takes her time and makes sure everything is perfect.",
-    rating: 5,
-  },
-  {
-    name: "Lisa T.",
-    text: "I love the personal attention you get here. No crowded salon, just a peaceful experience and beautiful nails every time.",
-    rating: 5,
-  },
-];
-
 function Stars({ count }) {
   return (
     <div className="flex gap-1 text-gold">
@@ -28,32 +10,34 @@ function Stars({ count }) {
   );
 }
 
-export default function Testimonials() {
+export default function Testimonials({ data }) {
+  const title = data?.title || "What People Say";
+  const subtitle = data?.subtitle || "Happy Clients";
+  const items = data?.items || [];
+
   return (
     <section id="testimonials" className="py-20 bg-gradient-to-b from-white to-cream">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-16">
           <p className="text-pink-dark font-medium tracking-widest uppercase text-sm mb-2">
-            Happy Clients
+            {subtitle}
           </p>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-            What People Say
-          </h2>
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">{title}</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((t, i) => (
+          {items.map((t, i) => (
             <div
               key={i}
               className="bg-white rounded-2xl p-6 shadow-sm hover:shadow-md transition-shadow"
             >
-              <Stars count={t.rating} />
+              <Stars count={t.rating || 5} />
               <p className="text-foreground/70 mt-4 leading-relaxed text-sm">
                 &ldquo;{t.text}&rdquo;
               </p>
               <div className="mt-4 flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-pink-light flex items-center justify-center text-pink-dark font-bold text-sm">
-                  {t.name[0]}
+                  {t.name?.[0] || "?"}
                 </div>
                 <p className="font-medium text-sm">{t.name}</p>
               </div>

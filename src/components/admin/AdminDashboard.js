@@ -7,18 +7,21 @@ import ServicesEditor from "./editors/ServicesEditor";
 import GalleryEditor from "./editors/GalleryEditor";
 import TestimonialsEditor from "./editors/TestimonialsEditor";
 import BookingEditor from "./editors/BookingEditor";
+import BookingsInbox from "./editors/BookingsInbox";
 
 const tabs = [
+  { id: "inbox", label: "Inbox" },
   { id: "hero", label: "Hero" },
   { id: "about", label: "About" },
   { id: "services", label: "Services" },
   { id: "gallery", label: "Gallery" },
   { id: "testimonials", label: "Reviews" },
-  { id: "booking", label: "Booking" },
+  { id: "booking", label: "Booking Info" },
 ];
 
 export default function AdminDashboard({ onLogout }) {
-  const [activeTab, setActiveTab] = useState("hero");
+  const [activeTab, setActiveTab] = useState("inbox");
+  const [unreadCount, setUnreadCount] = useState(0);
   const [content, setContent] = useState({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -30,13 +33,21 @@ export default function AdminDashboard({ onLogout }) {
 
   async function fetchAll() {
     setLoading(true);
-    const res = await fetch("/api/content");
-    const data = await res.json();
+    const [contentRes, bookingsRes] = await Promise.all([
+      fetch("/api/content"),
+      fetch("/api/bookings"),
+    ]);
+    const data = await contentRes.json();
     const mapped = {};
     data.forEach((d) => {
       mapped[d.section] = d;
     });
     setContent(mapped);
+
+    if (bookingsRes.ok) {
+      const bData = await bookingsRes.json();
+      setUnreadCount(bData.unreadCount || 0);
+    }
     setLoading(false);
   }
 
@@ -113,19 +124,27 @@ export default function AdminDashboard({ onLogout }) {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors relative ${
                 activeTab === tab.id
                   ? "bg-pink text-white"
                   : "bg-white text-foreground/60 hover:bg-pink-light/50"
               }`}
             >
               {tab.label}
+              {tab.id === "inbox" && unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                  {unreadCount}
+                </span>
+              )}
             </button>
           ))}
         </div>
 
         {/* Editor */}
         <div className="bg-white rounded-2xl p-6 shadow-sm">
+          {activeTab === "inbox" && (
+            <BookingsInbox />
+          )}
           {activeTab === "hero" && (
             <HeroEditor data={content.hero} onSave={(d) => saveSection("hero", d)} saving={saving} />
           )}

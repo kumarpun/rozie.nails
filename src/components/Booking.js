@@ -4,6 +4,8 @@ import { useState } from "react";
 
 export default function Booking({ data, services }) {
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
   const title = data?.title || "Book an Appointment";
   const subtitle = data?.subtitle || "";
@@ -17,9 +19,36 @@ export default function Booking({ data, services }) {
     (s) => `${s.title} - ${s.price}`
   );
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    setSubmitted(true);
+    setSubmitting(true);
+    setError("");
+
+    const formData = new FormData(e.target);
+    const body = {
+      name: formData.get("name"),
+      phone: formData.get("phone"),
+      service: formData.get("service"),
+      date: formData.get("date"),
+      message: formData.get("message") || "",
+    };
+
+    try {
+      const res = await fetch("/api/bookings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } catch {
+      setError("Network error. Please try again.");
+    }
+    setSubmitting(false);
   }
 
   return (
@@ -54,10 +83,14 @@ export default function Booking({ data, services }) {
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">
+                {error && (
+                  <p className="text-red-500 text-sm bg-red-50 p-3 rounded-lg">{error}</p>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Your Name</label>
                   <input
                     type="text"
+                    name="name"
                     required
                     className="w-full px-4 py-3 rounded-xl border border-foreground/10 bg-white focus:outline-none focus:ring-2 focus:ring-pink/50 focus:border-pink transition-colors"
                     placeholder="Jane Smith"
@@ -67,6 +100,7 @@ export default function Booking({ data, services }) {
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Phone Number</label>
                   <input
                     type="tel"
+                    name="phone"
                     required
                     className="w-full px-4 py-3 rounded-xl border border-foreground/10 bg-white focus:outline-none focus:ring-2 focus:ring-pink/50 focus:border-pink transition-colors"
                     placeholder="(555) 123-4567"
@@ -75,6 +109,7 @@ export default function Booking({ data, services }) {
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Service</label>
                   <select
+                    name="service"
                     required
                     className="w-full px-4 py-3 rounded-xl border border-foreground/10 bg-white focus:outline-none focus:ring-2 focus:ring-pink/50 focus:border-pink transition-colors"
                   >
@@ -88,6 +123,7 @@ export default function Booking({ data, services }) {
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Preferred Date</label>
                   <input
                     type="date"
+                    name="date"
                     required
                     className="w-full px-4 py-3 rounded-xl border border-foreground/10 bg-white focus:outline-none focus:ring-2 focus:ring-pink/50 focus:border-pink transition-colors"
                   />
@@ -95,6 +131,7 @@ export default function Booking({ data, services }) {
                 <div>
                   <label className="block text-sm font-medium text-foreground/70 mb-1">Message (optional)</label>
                   <textarea
+                    name="message"
                     rows={3}
                     className="w-full px-4 py-3 rounded-xl border border-foreground/10 bg-white focus:outline-none focus:ring-2 focus:ring-pink/50 focus:border-pink transition-colors resize-none"
                     placeholder="Any special requests or questions..."
@@ -102,9 +139,10 @@ export default function Booking({ data, services }) {
                 </div>
                 <button
                   type="submit"
-                  className="w-full bg-pink text-white py-3 rounded-xl font-medium text-lg hover:bg-pink-dark transition-colors shadow-lg shadow-pink/20"
+                  disabled={submitting}
+                  className="w-full bg-pink text-white py-3 rounded-xl font-medium text-lg hover:bg-pink-dark transition-colors shadow-lg shadow-pink/20 disabled:opacity-50"
                 >
-                  Request Appointment
+                  {submitting ? "Sending..." : "Request Appointment"}
                 </button>
               </form>
             )}

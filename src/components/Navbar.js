@@ -3,11 +3,11 @@
 import { useState } from "react";
 
 const navLinks = [
-  { href: "#services", label: "Services" },
-  { href: "#about", label: "About" },
-  { href: "#gallery", label: "Gallery" },
-  { href: "#testimonials", label: "Reviews" },
-  { href: "#booking", label: "Book Now" },
+  { href: "/#services", label: "Services" },
+  { href: "/#about", label: "About" },
+  { href: "/gallery", label: "Gallery" },
+  { href: "/#testimonials", label: "Reviews" },
+  { href: "/#booking", label: "Book Now" },
 ];
 
 export default function Navbar() {
@@ -17,7 +17,7 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md shadow-sm">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
-          <a href="#" className="text-2xl font-bold tracking-tight">
+          <a href="/" className="text-2xl font-bold tracking-tight">
             <span className="text-pink-dark">Rozie</span>
             <span className="text-gold"> Nails</span>
           </a>

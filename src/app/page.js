@@ -20,7 +20,7 @@ export default async function Home() {
         <Hero data={content.hero?.hero} />
         <Services data={content.services?.services} />
         <About data={content.about?.about} />
-        <Gallery data={content.gallery?.gallery} />
+        <Gallery data={content.gallery?.gallery} limit={6} showViewAll />
         <Testimonials data={content.testimonials?.testimonials} />
         <Booking data={content.booking?.booking} services={content.services?.services?.items} />
       </main>

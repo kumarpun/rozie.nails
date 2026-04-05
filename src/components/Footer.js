@@ -14,10 +14,10 @@ export default function Footer({ data }) {
           </div>
 
           <div className="flex items-center gap-6">
-            <a href="#services" className="text-sm hover:text-pink transition-colors">Services</a>
-            <a href="#about" className="text-sm hover:text-pink transition-colors">About</a>
-            <a href="#gallery" className="text-sm hover:text-pink transition-colors">Gallery</a>
-            <a href="#booking" className="text-sm hover:text-pink transition-colors">Book</a>
+            <a href="/#services" className="text-sm hover:text-pink transition-colors">Services</a>
+            <a href="/#about" className="text-sm hover:text-pink transition-colors">About</a>
+            <a href="/gallery" className="text-sm hover:text-pink transition-colors">Gallery</a>
+            <a href="/#booking" className="text-sm hover:text-pink transition-colors">Book</a>
           </div>
         </div>
 

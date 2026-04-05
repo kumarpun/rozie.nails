@@ -13,10 +13,12 @@ const placeholderColors = [
 
 const placeholderEmojis = ["💅", "✨", "🌸", "🤍", "❤️", "💫"];
 
-export default function Gallery({ data }) {
+export default function Gallery({ data, limit, showViewAll = false }) {
   const title = data?.title || "Gallery";
   const subtitle = data?.subtitle || "";
-  const items = data?.items || [];
+  const allItems = data?.items || [];
+  const items = limit ? allItems.slice(0, limit) : allItems;
+  const hasMore = limit && allItems.length > limit;
   const [lightbox, setLightbox] = useState(null);
 
   const close = useCallback(() => setLightbox(null), []);
@@ -113,6 +115,20 @@ export default function Gallery({ data }) {
             </div>
           ))}
         </div>
+
+        {showViewAll && hasMore && (
+          <div className="text-center mt-10">
+            <a
+              href="/gallery"
+              className="inline-flex items-center gap-2 bg-pink text-white px-8 py-3 rounded-full text-lg font-medium hover:bg-pink-dark transition-colors shadow-lg shadow-pink/30"
+            >
+              View All Gallery
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </a>
+          </div>
+        )}
       </div>
 
       {/* Lightbox */}

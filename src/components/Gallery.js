@@ -116,7 +116,7 @@ export default function Gallery({ data, limit, showViewAll = false }) {
           ))}
         </div>
 
-        {showViewAll && hasMore && (
+        {showViewAll && (
           <div className="text-center mt-10">
             <a
               href="/gallery"

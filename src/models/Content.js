@@ -17,6 +17,8 @@ const TestimonialSchema = new mongoose.Schema({
 const GalleryItemSchema = new mongoose.Schema({
   image: String,
   label: String,
+  order: { type: Number, default: 0 },
+  featured: { type: Boolean, default: false },
 });
 
 const ContentSchema = new mongoose.Schema(

@@ -17,8 +17,11 @@ const placeholderEmojis = ["💅", "✨", "🌸", "🤍", "❤️", "💫"];
 export default function Gallery({ data, limit, showViewAll = false }) {
   const title = data?.title || "Gallery";
   const subtitle = data?.subtitle || "";
-  const allItems = data?.items || [];
-  const items = limit ? allItems.slice(0, limit) : allItems;
+  const allItems = [...(data?.items || [])].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+  const featuredItems = allItems.filter((item) => item.featured);
+  const items = limit
+    ? (featuredItems.length > 0 ? featuredItems.slice(0, limit) : allItems.slice(0, limit))
+    : allItems;
   const [lightbox, setLightbox] = useState(null);
 
   const imageItems = useMemo(
